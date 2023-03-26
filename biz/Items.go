@@ -44,6 +44,24 @@ func GetItemInfo(itemId int32) (*redis_model.Item, error) {
 	return item, nil
 }
 
+func UpdateItemInfo(itemMysql *mysql_model.Item) error {
+	cacheKey := getItemInfoKey(itemMysql.ID)
+	if tx := mysql.GetDBConn().Table("items").Where("id = ?", itemMysql.ID).First(itemMysql); tx.Error != nil {
+		return tx.Error
+	}
+	item := itemMysql.ToRedis()
+	if itembyte, err := json.Marshal(item); err != nil {
+		return err
+	} else if setcmd := redis.DB.Set(cacheKey, string(itembyte), ItemCacheTTL); setcmd.Err() != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteItemInfo(itemKey int32) error {
+	return redis.DB.Del(getItemInfoKey(itemKey)).Err()
+}
+
 func getItemInfoKey(itemId int32) string {
 	return fmt.Sprintf("iteminfo-pack-%d", itemId)
 }

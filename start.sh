@@ -1,9 +1,9 @@
 #!/bin/bash
 
-IMAGE_NAME=cowstudio/gateway
-CONTAINER_NAME=gateway
+IMAGE_NAME=cowstudio/pack
+CONTAINER_NAME=pack
 
-SERVICE_NAME=cowstudio/gateway
+SERVICE_NAME=cowstudio/pack
 SERVICE_PORT=3080
 SERVICE_ADDRESS=cowstudio.wayne-lee.cn
 SIDECAR_PORT=4080

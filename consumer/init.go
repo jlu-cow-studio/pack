@@ -28,7 +28,12 @@ func Init() {
 func consumer(msg kafka.Message) error {
 
 	log.Println("get a message, ")
-	litter.Dump(msg)
+	// litter.Dump(msg.)
+	litter.Dump(msg.Headers)
+	litter.Dump(msg.Offset)
+	litter.Dump(msg.Partition)
+	litter.Dump(msg.Topic)
+	litter.Dump(msg.Time)
 	log.Println("value : ", string(msg.Value))
 
 	itemChange := new(mq_struct.ItemChangeMsg)

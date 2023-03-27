@@ -4,9 +4,9 @@ IMAGE_NAME=cowstudio/pack
 CONTAINER_NAME=pack
 
 SERVICE_NAME=cowstudio/pack
-SERVICE_PORT=3080
+SERVICE_PORT=3088
 SERVICE_ADDRESS=cowstudio.wayne-lee.cn
-SIDECAR_PORT=4080
+SIDECAR_PORT=4088
 
 # 构建镜像
 docker build -t $IMAGE_NAME .

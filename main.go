@@ -1,43 +1,28 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-	"log"
-	"net"
-
 	"github.com/jlu-cow-studio/common/dal/mysql"
 	"github.com/jlu-cow-studio/common/dal/redis"
-	"github.com/jlu-cow-studio/common/dal/rpc/pack"
 	"github.com/jlu-cow-studio/common/discovery"
 	"github.com/jlu-cow-studio/pack/consumer"
-	"github.com/jlu-cow-studio/pack/handler"
-	"google.golang.org/grpc"
+	"github.com/jlu-cow-studio/pack/rpc"
 )
-
-var (
-	port = flag.Int("port", 8080, "The server port")
-)
-
-var rpcErrChan chan error
 
 func main() {
 	discovery.Init()
 	redis.Init()
 	mysql.Init()
 	consumer.Init()
+	rpc.Init()
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+	select {
+	case err, ok := <-consumer.ErrChan:
+		if !ok {
+			panic("consumer down! " + err.Error())
+		}
+	case err, ok := <-rpc.ErrChan:
+		if !ok {
+			panic("rpc down !" + err.Error())
+		}
 	}
-	s := grpc.NewServer()
-	pack.RegisterPackServiceServer(s, &handler.Handler{})
-
-	log.Printf("server listening at %v", lis.Addr())
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
-
-	log.Println("finished rpc deployment")
 }

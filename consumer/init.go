@@ -20,7 +20,7 @@ func Init() {
 		log.Println("listening topic : ", mq.Topic_ItemChange)
 		err := mq.Listen(context.Background(), mq.Topic_ItemChange, consumer)
 		log.Println("consumer error : ", err.Error())
-		ErrChan <- err
+		close(ErrChan)
 		panic(err)
 	}()
 }

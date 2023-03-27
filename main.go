@@ -10,6 +10,7 @@ import (
 	"github.com/jlu-cow-studio/common/dal/redis"
 	"github.com/jlu-cow-studio/common/dal/rpc/pack"
 	"github.com/jlu-cow-studio/common/discovery"
+	"github.com/jlu-cow-studio/pack/consumer"
 	"github.com/jlu-cow-studio/pack/handler"
 	"google.golang.org/grpc"
 )
@@ -18,10 +19,13 @@ var (
 	port = flag.Int("port", 8080, "The server port")
 )
 
+var rpcErrChan chan error
+
 func main() {
 	discovery.Init()
 	redis.Init()
 	mysql.Init()
+	consumer.Init()
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
@@ -34,4 +38,6 @@ func main() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+
+	log.Println("finished rpc deployment")
 }

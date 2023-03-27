@@ -3,11 +3,13 @@ package biz
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/jlu-cow-studio/common/dal/mysql"
 	"github.com/jlu-cow-studio/common/dal/redis"
 	mysql_model "github.com/jlu-cow-studio/common/model/dao_struct/mysql"
 	redis_model "github.com/jlu-cow-studio/common/model/dao_struct/redis"
+	"github.com/sanity-io/litter"
 )
 
 const (
@@ -45,6 +47,8 @@ func GetItemInfo(itemId int32) (*redis_model.Item, error) {
 }
 
 func UpdateItemInfo(itemMysql *mysql_model.Item) error {
+	log.Println("update item info cache: ")
+	litter.Dump(itemMysql)
 	cacheKey := getItemInfoKey(itemMysql.ID)
 	if tx := mysql.GetDBConn().Table("items").Where("id = ?", itemMysql.ID).First(itemMysql); tx.Error != nil {
 		return tx.Error
@@ -59,6 +63,7 @@ func UpdateItemInfo(itemMysql *mysql_model.Item) error {
 }
 
 func DeleteItemInfo(itemKey int32) error {
+	log.Println("delete item cache, ", itemKey)
 	return redis.DB.Del(getItemInfoKey(itemKey)).Err()
 }
 

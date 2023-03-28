@@ -11,7 +11,7 @@ import (
 	"github.com/sanity-io/litter"
 )
 
-func PackItemsHandler(ctx context.Context, req *pack.PackItemsReq) (res *pack.PackItemsRes, erro error) {
+func PackItems(ctx context.Context, req *pack.PackItemsReq) (res *pack.PackItemsRes, erro error) {
 
 	res = &pack.PackItemsRes{
 		Base: &base.BaseRes{

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/jlu-cow-studio/common/dal/mysql"
 	"github.com/jlu-cow-studio/common/dal/redis"
@@ -13,7 +14,7 @@ import (
 )
 
 const (
-	ItemCacheTTL = 3600 // 缓存时间1小时
+	ItemCacheTTL = time.Hour // 缓存时间1小时
 )
 
 func GetItemInfo(itemId int32) (*redis_model.Item, error) {

@@ -2,11 +2,13 @@ package handler
 
 import (
 	"context"
+	"log"
 
 	"github.com/jlu-cow-studio/common/dal/rpc/base"
 	"github.com/jlu-cow-studio/common/dal/rpc/pack"
 	"github.com/jlu-cow-studio/common/dal/rpc/product_core"
 	"github.com/jlu-cow-studio/pack/biz"
+	"github.com/sanity-io/litter"
 )
 
 func PackItemsHandler(ctx context.Context, req *pack.PackItemsReq) (res *pack.PackItemsRes, erro error) {
@@ -18,6 +20,8 @@ func PackItemsHandler(ctx context.Context, req *pack.PackItemsReq) (res *pack.Pa
 		},
 		ItemList: []*product_core.ItemInfo{},
 	}
+
+	log.Printf("[Pack] pack items req : %v", litter.Sdump(req))
 
 	ids := req.GetItemIdList()
 
@@ -48,5 +52,7 @@ func PackItemsHandler(ctx context.Context, req *pack.PackItemsReq) (res *pack.Pa
 	}
 
 	res.Base.Code = "200"
+
+	log.Printf("[Pack] pack items res : %v", litter.Sdump(res))
 	return
 }

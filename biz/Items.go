@@ -28,6 +28,8 @@ func GetItemInfo(itemId int32) (*redis_model.Item, error) {
 			return nil, tx.Error
 		}
 		item = itemMysql.ToRedis()
+		log.Printf("get item info from mysql\n")
+		litter.Dump(item)
 		if itembyte, err := json.Marshal(item); err != nil {
 			return nil, err
 		} else if setcmd := redis.DB.Set(cacheKey, string(itembyte), ItemCacheTTL); setcmd.Err() != nil {
@@ -41,7 +43,11 @@ func GetItemInfo(itemId int32) (*redis_model.Item, error) {
 		if err := json.Unmarshal([]byte(strcmd.Val()), item); err != nil {
 			return nil, err
 		}
+		log.Printf("get item info from redis\n")
+		litter.Dump(item)
 	}
+	log.Printf("item info \n")
+	litter.Dump(item)
 
 	return item, nil
 }

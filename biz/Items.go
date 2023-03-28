@@ -41,6 +41,7 @@ func GetItemInfo(itemId int32) (*redis_model.Item, error) {
 		if strcmd.Err() != nil {
 			return nil, strcmd.Err()
 		}
+		item = new(redis_model.Item)
 		if err := json.Unmarshal([]byte(strcmd.Val()), item); err != nil {
 			return nil, err
 		}

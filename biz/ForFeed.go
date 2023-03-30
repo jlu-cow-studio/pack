@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	ItemCacheTTL = time.Hour // 缓存时间1小时
+	ItemCacheTTL      = time.Hour // 缓存时间1小时
+	TableName_ForFeed = "item_user_for_feed"
 )
 
 func GetItemInfoForFeed(itemId int32) (*redis_model.ItemForFeed, error) {
@@ -25,7 +26,7 @@ func GetItemInfoForFeed(itemId int32) (*redis_model.ItemForFeed, error) {
 	if cmd := redis.DB.Exists(cacheKey); cmd.Err() != nil || cmd.Val() == 0 {
 		//redis中不存在，从mysql中获取
 		itemMysql := &mysql_model.ItemForFeed{}
-		if tx := mysql.GetDBConn().Table("items").Where("id = ?", itemId).First(itemMysql); tx.Error != nil {
+		if tx := mysql.GetDBConn().Table(TableName_ForFeed).Where("id = ?", itemId).First(itemMysql); tx.Error != nil {
 			return nil, tx.Error
 		}
 		item = itemMysql.ToRedis()
@@ -58,7 +59,7 @@ func UpdateItemInfo(itemMysql *mysql_model.Item) error {
 	log.Println("update item info cache: ")
 	litter.Dump(itemMysql)
 	cacheKey := getItemInfoKey(itemMysql.ID)
-	if tx := mysql.GetDBConn().Table("items").Where("id = ?", itemMysql.ID).First(itemMysql); tx.Error != nil {
+	if tx := mysql.GetDBConn().Table(TableName_ForFeed).Where("id = ?", itemMysql.ID).First(itemMysql); tx.Error != nil {
 		return tx.Error
 	}
 	item := itemMysql.ToRedis()

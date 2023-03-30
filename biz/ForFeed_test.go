@@ -6,6 +6,7 @@ import (
 	"github.com/jlu-cow-studio/common/dal/mysql"
 	"github.com/jlu-cow-studio/common/dal/redis"
 	"github.com/jlu-cow-studio/common/discovery"
+	"github.com/sanity-io/litter"
 )
 
 func TestClearCacheForFeed(t *testing.T) {
@@ -13,5 +14,7 @@ func TestClearCacheForFeed(t *testing.T) {
 	discovery.Init()
 	redis.Init()
 	mysql.Init()
-	ClearCacheForFeed()
+
+	err := ClearCacheForFeed()
+	litter.Dump(err)
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/jlu-cow-studio/common/dal/mq"
 	"github.com/jlu-cow-studio/common/dal/mysql"
 	"github.com/jlu-cow-studio/common/dal/redis"
 	"github.com/jlu-cow-studio/common/discovery"
@@ -12,6 +13,7 @@ func main() {
 	discovery.Init()
 	redis.Init()
 	mysql.Init()
+	mq.Init()
 	consumer.Init()
 	rpc.Init()
 

@@ -83,7 +83,7 @@ func getItemForFeedKey(itemId int32) string {
 
 func ClearCacheForFeed() error {
 	// 获取所有与通配符匹配的键
-	keys, err := redis.DB.Keys(KeyPrefix_ForFeed).Result()
+	keys, err := redis.DB.Keys(KeyPrefix_ForFeed + "*").Result()
 	if err != nil {
 		return err
 	}

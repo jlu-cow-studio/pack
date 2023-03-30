@@ -17,14 +17,14 @@ const (
 	ItemCacheTTL = time.Hour // 缓存时间1小时
 )
 
-func GetItemInfo(itemId int32) (*redis_model.Item, error) {
-	var item *redis_model.Item
+func GetItemInfoForFeed(itemId int32) (*redis_model.ItemForFeed, error) {
+	var item *redis_model.ItemForFeed
 
 	cacheKey := getItemInfoKey(itemId)
 
 	if cmd := redis.DB.Exists(cacheKey); cmd.Err() != nil || cmd.Val() == 0 {
 		//redis中不存在，从mysql中获取
-		itemMysql := &mysql_model.Item{}
+		itemMysql := &mysql_model.ItemForFeed{}
 		if tx := mysql.GetDBConn().Table("items").Where("id = ?", itemId).First(itemMysql); tx.Error != nil {
 			return nil, tx.Error
 		}
@@ -41,7 +41,7 @@ func GetItemInfo(itemId int32) (*redis_model.Item, error) {
 		if strcmd.Err() != nil {
 			return nil, strcmd.Err()
 		}
-		item = new(redis_model.Item)
+		item = new(redis_model.ItemForFeed)
 		if err := json.Unmarshal([]byte(strcmd.Val()), item); err != nil {
 			return nil, err
 		}

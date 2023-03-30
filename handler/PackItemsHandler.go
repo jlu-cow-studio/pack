@@ -9,6 +9,7 @@ import (
 	"github.com/jlu-cow-studio/common/dal/rpc/pack"
 	"github.com/jlu-cow-studio/pack/biz"
 	"github.com/sanity-io/litter"
+	"gorm.io/gorm"
 )
 
 func (h *Handler) PackItemsForFeed(ctx context.Context, req *pack.PackItemsForFeedReq) (res *pack.PackItemsForFeedRes, erro error) {
@@ -27,6 +28,9 @@ func (h *Handler) PackItemsForFeed(ctx context.Context, req *pack.PackItemsForFe
 
 	for _, id := range ids {
 		if itemRedis, err := biz.GetItemInfoForFeed(id); err != nil {
+			if err == gorm.ErrRecordNotFound {
+				continue
+			}
 			res.Base.Code = "400"
 			res.Base.Message = err.Error()
 			return

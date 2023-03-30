@@ -62,7 +62,7 @@ func UpdateItemInfo(itemMysql *mysql_model.Item) error {
 
 	cacheKey := getItemForFeedKey(itemMysql.ID)
 	itemForFeedMysql := &mysql_model.ItemForFeed{}
-	if tx := mysql.GetDBConn().Table(TableName_ForFeed).Where("id = ?", itemMysql.ID).First(itemMysql); tx.Error != nil {
+	if tx := mysql.GetDBConn().Table(TableName_ForFeed).Where("id = ?", itemMysql.ID).First(itemForFeedMysql); tx.Error != nil {
 		return tx.Error
 	}
 

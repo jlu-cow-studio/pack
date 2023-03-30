@@ -47,7 +47,7 @@ func consumer(msg kafka.Message) error {
 	case mq_struct.ItemOp_Update:
 		return biz.UpdateItemInfo(mysql.ItemFromRedis(itemChange.Info))
 	case mq_struct.ItemOp_Delete:
-		return biz.DeleteItemInfo(itemChange.Info.ID)
+		return biz.DeleteItemForFeed(itemChange.Info.ID)
 	default:
 	}
 

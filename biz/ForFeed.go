@@ -16,12 +16,13 @@ import (
 const (
 	ItemCacheTTL      = time.Hour // 缓存时间1小时
 	TableName_ForFeed = "item_user_for_feed"
+	KeyPrefix_ForFeed = "iteminfo-pack"
 )
 
 func GetItemInfoForFeed(itemId int32) (*redis_model.ItemForFeed, error) {
 	var item *redis_model.ItemForFeed
 
-	cacheKey := getItemInfoKey(itemId)
+	cacheKey := getItemForFeedKey(itemId)
 
 	if cmd := redis.DB.Exists(cacheKey); cmd.Err() != nil || cmd.Val() == 0 {
 		//redis中不存在，从mysql中获取
@@ -58,7 +59,7 @@ func GetItemInfoForFeed(itemId int32) (*redis_model.ItemForFeed, error) {
 func UpdateItemInfo(itemMysql *mysql_model.Item) error {
 	log.Println("update item info cache: ")
 	litter.Dump(itemMysql)
-	cacheKey := getItemInfoKey(itemMysql.ID)
+	cacheKey := getItemForFeedKey(itemMysql.ID)
 	if tx := mysql.GetDBConn().Table(TableName_ForFeed).Where("id = ?", itemMysql.ID).First(itemMysql); tx.Error != nil {
 		return tx.Error
 	}
@@ -71,11 +72,29 @@ func UpdateItemInfo(itemMysql *mysql_model.Item) error {
 	return nil
 }
 
-func DeleteItemInfo(itemKey int32) error {
+func DeleteItemForFeed(itemKey int32) error {
 	log.Println("delete item cache, ", itemKey)
-	return redis.DB.Del(getItemInfoKey(itemKey)).Err()
+	return redis.DB.Del(getItemForFeedKey(itemKey)).Err()
 }
 
-func getItemInfoKey(itemId int32) string {
-	return fmt.Sprintf("iteminfo-pack-%d", itemId)
+func getItemForFeedKey(itemId int32) string {
+	return fmt.Sprintf("%v-%d", KeyPrefix_ForFeed, itemId)
+}
+
+func ClearCacheForFeed() error {
+	// 获取所有与通配符匹配的键
+	keys, err := redis.DB.Keys(KeyPrefix_ForFeed).Result()
+	if err != nil {
+		return err
+	}
+	if len(keys) == 0 {
+		// 如果没有找到匹配的键，则直接返回
+		return nil
+	}
+	// 删除所有匹配的键
+	_, err = redis.DB.Del(keys...).Result()
+	if err != nil {
+		return err
+	}
+	return nil
 }

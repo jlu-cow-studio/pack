@@ -59,16 +59,23 @@ func GetItemInfoForFeed(itemId int32) (*redis_model.ItemForFeed, error) {
 func UpdateItemInfo(itemMysql *mysql_model.Item) error {
 	log.Println("update item info cache: ")
 	litter.Dump(itemMysql)
+
 	cacheKey := getItemForFeedKey(itemMysql.ID)
+	itemForFeedMysql := &mysql_model.ItemForFeed{}
 	if tx := mysql.GetDBConn().Table(TableName_ForFeed).Where("id = ?", itemMysql.ID).First(itemMysql); tx.Error != nil {
 		return tx.Error
 	}
-	item := itemMysql.ToRedis()
+
+	item := itemForFeedMysql.ToRedis()
+	log.Printf("get item info from mysql\n")
+	litter.Dump(item)
+
 	if itembyte, err := json.Marshal(item); err != nil {
 		return err
 	} else if setcmd := redis.DB.Set(cacheKey, string(itembyte), ItemCacheTTL); setcmd.Err() != nil {
 		return err
 	}
+
 	return nil
 }
 
